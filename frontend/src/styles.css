@@ -1,0 +1,77 @@
+/* styles.css (or your preferred CSS file) */
+.sudoku-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 1px;
+  background-color: #333;
+  border: 2px solid #333;
+  width: 450px;
+  height: 450px;
+}
+
+.sudoku-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+/* Every 3rd row and column has a thicker border to denote 3x3 boxes */
+.sudoku-cell:nth-child(3n) {
+  border-right: 4px solid #333;
+}
+
+.sudoku-cell:nth-child(9n) {
+  border-right: none;
+}
+
+.sudoku-row{
+  border-bottom: 4px solid #333;
+}
+
+
+/* Input styling */
+.sudoku-cell input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  background: transparent;
+  outline: none;
+}
+
+/* Remove number input arrows */
+.sudoku-cell input::-webkit-outer-spin-button,
+.sudoku-cell input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* .sudoku-cell input[type="number"] {
+  -moz-appearance: textfield;
+} */
+
+/* Highlighting for active cell */
+.sudoku-cell input:focus {
+  background-color: #e6f7ff;
+}
+
+.sudoku-cell input:disabled {
+    background-color: #e2dbdb;
+}
+
+.wrong {
+    background-color: red;
+}

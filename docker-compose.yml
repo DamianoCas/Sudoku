@@ -1,5 +1,4 @@
 services:
-
   postgres:
     image: "postgres:17.2"
     ports:
@@ -8,4 +7,40 @@ services:
       POSTGRES_USER: "test"
       POSTGRES_PASSWORD: "test"
       POSTGRES_DB: "test"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      DB_HOST: "postgres"
+      DB_PORT: 5432
+      DB_USERNAME: "test"
+      DB_PASSWORD: "test"
+      DB_DATABASE: "test"
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+  
+  frontend:
+    build:
+      context: ./frontend 
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
 
+volumes:
+  postgres_data:
