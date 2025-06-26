@@ -1,18 +1,39 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate, OneToMany } from "typeorm"
+import * as bcrypt from 'bcrypt'
+import { UsersGames } from "./UsersGames";
 
 @Entity()
 export class User {
 
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column()
-    firstName: string
+    userName: string;
+
+    @Column({ unique: true })
+    eMail: string;
 
     @Column()
-    lastName: string
+    passwordHash: string;
 
     @Column()
-    age: number
+    salt: string;
 
+    @OneToMany(() => UsersGames, (userGames) => userGames.user)
+    userGames: UsersGames;
+
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    async hashPassword() {
+        if (this.passwordHash) {
+            this.salt = await bcrypt.genSalt();
+            this.passwordHash = await bcrypt.hash(this.passwordHash, this.salt);
+        }
+    }
+
+    async validatePassword(password: string): Promise<boolean> {
+        return bcrypt.compare(password, this.passwordHash);
+    }
 }
