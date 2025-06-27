@@ -9,36 +9,35 @@ import { readFile } from "fs/promises"
 
 AppDataSource.initialize().then(async () => {
     
-    // create express app
-    const app = express()
-    app.use(bodyParser.json())
+    const app = express();
+    app.use(bodyParser.json());
     
-    // register express routes from defined application routes
     Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
             const result = (new (route.controller as any))[route.action](req, res, next)
             if (result instanceof Promise) {
-                result.then(result => result !== null && result !== undefined ? res.send(result) : undefined)
+                result.then(result => result !== null && result !== undefined ? res.send(result) : undefined);
                 
             } else if (result !== null && result !== undefined) {
-                res.json(result)
+                res.json(result);
             }
         })
-    })
+    });
+
+    //TO-DO
+    //result !== null && result !== undefined => !result
+    //rename file to app.ts
+    //fare ad hoc
     
-    // setup express app here
-    // ...
-    
-    insertUsers();
+    //insertUsers();
     insertSudokuBoards();
     
-    // start express server
-    app.listen(3000)
+    app.listen(3000);
     
     
-    console.log("Express server has started on port 3000. Open http://localhost:3000/users to see results")
+    console.log("Express server has started on port 3000. Open http://localhost:3000/users to see results");
     
-}).catch(error => console.log(error))
+}).catch(error => console.error(error))
 
 
 async function insertUsers() {
@@ -56,7 +55,7 @@ async function insertUsers() {
             eMail: "franco@gmail.com",
             passwordHash: "password123"
         })
-    )
+    );
     
     await AppDataSource.manager.save(
         AppDataSource.manager.create(User, {
@@ -64,7 +63,7 @@ async function insertUsers() {
             eMail: "mimmo@gmail.com",
             passwordHash: "password..123"
         })
-    )
+    );
 }
 
 async function insertSudokuBoards() {
@@ -85,8 +84,7 @@ async function insertSudokuBoards() {
         lines.forEach((line: string) => {
             const sudokuString = line.split(",", 5);
             
-            const newSudokuBoard:SudokuBoard = 
-            {
+            const newSudokuBoard:SudokuBoard = {
                 id: +sudokuString[0],
                 puzzle: sudokuString[1],
                 solution: sudokuString[2],
@@ -107,6 +105,6 @@ async function insertSudokuBoards() {
         
 
     } catch(error) {
-        console.error(error)
+        console.error(error);
     }
 }

@@ -1,53 +1,80 @@
 import { AppDataSource } from "../data-source"
 import { NextFunction, Request, Response } from "express"
 import { User } from "../entity/User"
+import AbstractController from "./AbstractController";
+import { validate } from 'class-validator';
 
-export class UserController {
+export class UserController extends AbstractController{
 
-    private userRepository = AppDataSource.getRepository(User)
+    private userRepository = AppDataSource.getRepository(User);
 
     async all(request: Request, response: Response, next: NextFunction) {
-        return this.userRepository.find()
+        try {
+            return this.userRepository.find();
+        } catch (error) {
+            this.internalError(response, error.message)
+        }
     }
 
     async one(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
+        try {
+            const id = parseInt(request.params.id);
+            const user = await this.userRepository.findOne({ where: { id } })
 
-
-        const user = await this.userRepository.findOne({
-            where: { id }
-        })
-
-        if (!user) {
-            return "unregistered user"
+            if (!user) return "unregistered user";
+            return user
+        } catch (error) {
+            this.internalError(response, error.message);
         }
-        return user
+        
     }
 
     async save(request: Request, response: Response, next: NextFunction) {
-        const { firstName, lastName, age } = request.body;
+        try{
+            const { userName, eMail, password } = request.body;
+            let user = new User();
+            user.userName = userName;
+            user.eMail = eMail;
+            user.passwordHash = password;
 
-        const user = Object.assign(new User(), {
-            firstName,
-            lastName,
-            age
-        })
+            const errors = await validate(user);
 
-        return this.userRepository.save(user)
+            if (errors.length > 0) throw new Error('Validation failed');
+            else await this.userRepository.save(this.userRepository.create(user));
+
+            return user;
+        } catch (error) {
+            this.internalError(response, error.message);
+        }
+        
     }
 
     async remove(request: Request, response: Response, next: NextFunction) {
-        const id = parseInt(request.params.id)
+        try {
+            const id = parseInt(request.params.id)
+            let userToRemove = await this.userRepository.findOneBy({ id })
 
-        let userToRemove = await this.userRepository.findOneBy({ id })
+            if (!userToRemove) return "this user not exist";
 
-        if (!userToRemove) {
-            return "this user not exist"
+            await this.userRepository.remove(userToRemove)
+            return "user has been removed"
+        } catch (error) {
+            this.internalError(response, error.message);
         }
-
-        await this.userRepository.remove(userToRemove)
-
-        return "user has been removed"
+        
     }
 
+    async login(request: Request, response: Response, next: NextFunction) {
+        try {
+            const { eMail, password } = request.body;
+
+            const user = await this.userRepository.findOne({ where: { eMail } })
+
+            if (!user) return "unregistered user";
+            if (await user.validatePassword(password)) return user;
+            else return "password not correct";
+        } catch (error) {
+            this.internalError(response, error.message);
+        }
+    }
 }
