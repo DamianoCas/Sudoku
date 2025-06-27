@@ -15,5 +15,5 @@ export class Game{
     board: SudokuBoard;
 
     @OneToMany(() => UsersGames, (usersGame) => usersGame.game)
-    usersGame: UsersGames;
+    usersGame: UsersGames[];
 }

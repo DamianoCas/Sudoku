@@ -30,20 +30,27 @@ AppDataSource.initialize().then(async () => {
     // start express server
     app.listen(3000)
 
+    await AppDataSource
+        .createQueryBuilder()
+        .delete()
+        .from(User)
+        .where("1 = 1")
+        .execute();
+
     // insert new users for test
     await AppDataSource.manager.save(
         AppDataSource.manager.create(User, {
-            firstName: "Timber",
-            lastName: "Saw",
-            age: 27
+            userName: "Kuroi",
+            eMail: "franco@gmail.com",
+            passwordHash: "password123"
         })
     )
 
     await AppDataSource.manager.save(
         AppDataSource.manager.create(User, {
-            firstName: "Phantom",
-            lastName: "Assassin",
-            age: 24
+            userName: "PieroUbaldo",
+            eMail: "mimmo@gmail.com",
+            passwordHash: "password..123"
         })
     )
 
