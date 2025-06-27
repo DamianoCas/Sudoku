@@ -1,67 +1,52 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SudokuBoard, { type sudokuSpecifics } from "./components/SudokuBoard"
 
 
 function App() {
-  const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics>({
-    id: 0,
-    puzzle: "",
-    solution: "",
-    clues: 0,
-    diffuclty: 0
-  })
-
-  // handleNewBoard(false)
+  const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
   
-  async function getLineFromCSVContent(csvContent: string, index: number): Promise<string> {
-    const lines = csvContent.split('\n').filter(line => line.trim() !== '');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await getBoardFromDB(289);
+        setBoardSpecifics(data);
+      } catch (err) {
+        console.error(err);
+      } 
+    };
     
-    if (lines.length === 0) {
-      throw new Error('CSV content is empty');
+    fetchData();
+  }, []);
+  
+  async function getBoardFromDB(index: number): Promise<sudokuSpecifics> {
+    try {
+      const response = await fetch(`/api/sudokuBoard/${index}`);
+      return await response.json();
+    } catch (error) {
+      console.error(error);
+      throw error;
     }
-    
-    return lines[index];
   }
   
-  
-  function handleNewBoard(isRandom: boolean) {
-    let index = 0;
-    if (isRandom)
-      index = Math.floor(Math.random() * (999))+1;
-    else
-      index = 288;
-    
-    fetch('./src/assets/sudoku-3m.csv')
-    .then(response => response.text())
-    .then(csvContent => getLineFromCSVContent(csvContent, index))
-    .then(randomLine => {
-      const randomSudoku = randomLine.split(",", 5);
-      
-      const newBoardSpecifics = {
-        id: +randomSudoku[0],
-        puzzle: randomSudoku[1],
-        solution: randomSudoku[2],
-        clues: +randomSudoku[3],
-        diffuclty: +randomSudoku[4]
-      }
-      
-      setBoardSpecifics(newBoardSpecifics);
-    })
-    .catch(console.error);
+  async function handleNewBoard(index: number) {
+    if (index === -1) index = Math.floor(Math.random() * (999))+1;
+
+    const board = await getBoardFromDB(index);
+    setBoardSpecifics(board);
   }
-  
-  
-  
-  
   
   return (
     <main>
     <h1>Sudoku</h1>
     <div className="sudoku-container">
-    <SudokuBoard specifics={boardSpecifics}/>
+    {boardSpecifics ? (
+      <SudokuBoard specifics={boardSpecifics} />
+    ) : (
+      <div>Loading board...</div>
+    )}
     </div>
     
-    <button onClick={() => handleNewBoard(true)}>New Board</button>
+    <button onClick={() => handleNewBoard(-1)}>New Board</button>
     </main>
   )
 }

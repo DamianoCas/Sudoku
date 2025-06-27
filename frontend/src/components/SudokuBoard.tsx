@@ -18,12 +18,13 @@ export type sudokuSpecifics = {
 }
 
 interface SudokuBoardProps {
-  specifics: sudokuSpecifics
+  specifics?: sudokuSpecifics
   
 }
 
 export default function SudokuBoard ({specifics}: SudokuBoardProps) {
   const [grid, setGrid] = useState<SudokuCell[][]>([]);
+  if (!specifics) return;
 
   useEffect(() => {
     let count = 0;

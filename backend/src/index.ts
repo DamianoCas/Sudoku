@@ -1,4 +1,4 @@
-import * as express from "express"
+import  express from "express"
 import * as bodyParser from "body-parser"
 import { Request, Response } from "express"
 import { AppDataSource } from "./data-source"
@@ -6,11 +6,17 @@ import { Routes } from "./routes"
 import { User } from "./entity/User"
 import { SudokuBoard } from "./entity/SudokuBoard"
 import { readFile } from "fs/promises"
+import cors from "cors";
 
 AppDataSource.initialize().then(async () => {
     
     const app = express();
-    app.use(bodyParser.json());
+    app.use(cors({
+        origin: [
+            'http://localhost:5173',
+            'http://frontend:5173'
+        ]
+    }));
     
     Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
