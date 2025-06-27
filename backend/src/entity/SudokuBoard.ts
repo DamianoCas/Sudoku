@@ -16,7 +16,7 @@ export class SudokuBoard{
     @Column()
     clues: number;
 
-    @Column()
+    @Column({type: "float"})
     difficulty: number;
 
     @OneToMany(() => Game, (game) => game.board)
