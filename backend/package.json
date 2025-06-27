@@ -12,10 +12,11 @@
    "dependencies": {
       "bcrypt": "^6.0.0",
       "body-parser": "^1.20.3",
+      "class-validator": "^0.14.2",
       "express": "^4.21.2",
       "pg": "^8.14.1",
       "reflect-metadata": "^0.2.2",
-      "typeorm": "0.3.25"
+      "typeorm": "^0.3.25"
    },
    "scripts": {
       "start": "ts-node src/index.ts",
