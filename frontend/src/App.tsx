@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import SudokuBoard, { type sudokuSpecifics } from "./components/SudokuBoard"
 import Timer, {type TimerState as State, TimerState} from "./components/Timer"
+import Header from "./components/Header";
 
 
 function App() {
@@ -50,23 +51,29 @@ function App() {
   }
   
   return (
-    <main>
-      <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
-        <h1>Id: {boardSpecifics?.id}</h1>
-        <Timer timerRunning={timerRunning}/>
-        <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
+    <div>
+      <div>
+        <Header/>
       </div>
-      
-      <div className="sudoku-container">
-      {boardSpecifics ? (
-        <SudokuBoard specifics={boardSpecifics} onStartTimer={handleStartTimer} onStopTimer={handleStopTimer} onResetTimer={handleResetTimer}/>
-      ) : (
-        <div>Loading board...</div>
-      )}
-      </div>
-      
-      <button onClick={() => handleNewBoard(-1)}>New Board</button>
-    </main>
+      <main>
+        <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
+          <h1>Id: {boardSpecifics?.id}</h1>
+          <Timer timerRunning={timerRunning}/>
+          <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
+        </div>
+        
+        <div className="sudoku-container">
+        {boardSpecifics ? (
+          <SudokuBoard specifics={boardSpecifics} onStartTimer={handleStartTimer} onStopTimer={handleStopTimer} onResetTimer={handleResetTimer}/>
+        ) : (
+          <div>Loading board...</div>
+        )}
+        </div>
+        
+        <button onClick={() => handleNewBoard(-1)}>New Board</button>
+      </main>
+    </div>
+    
   )
 }
 
