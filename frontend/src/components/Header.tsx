@@ -2,7 +2,13 @@
 import { useState } from 'react';
 import styles from '../styles/header.module.css';
 
-export default function Header() {
+interface HeaderProps {
+    onUserSelection: () => void,
+    onGameSelection: () => void,
+    onLeaderBoardSelection: () => void,
+}
+
+export default function Header({onUserSelection, onGameSelection, onLeaderBoardSelection}: HeaderProps) {
   // State to track which view is active
   const [activeView, setActiveView] = useState('game'); // default to 'game'
 
@@ -11,19 +17,28 @@ export default function Header() {
       <div className={styles.navButtons}>
         <button
           className={`${styles.navButton} ${activeView === 'user' ? styles.active : ''}`}
-          onClick={() => setActiveView('user')}
+          onClick={() => {
+            setActiveView('user');
+            onUserSelection();
+        }}
         >
           User
         </button>
         <button
           className={`${styles.navButton} ${activeView === 'game' ? styles.active : ''}`}
-          onClick={() => setActiveView('game')}
+          onClick={() => {
+            setActiveView('game');
+            onGameSelection();
+          }}
         >
           Game
         </button>
         <button
           className={`${styles.navButton} ${activeView === 'leaderboard' ? styles.active : ''}`}
-          onClick={() => setActiveView('leaderboard')}
+          onClick={() => {
+            setActiveView('leaderboard');
+            onLeaderBoardSelection();
+          }}
         >
           Leaders
         </button>

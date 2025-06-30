@@ -1,12 +1,22 @@
 import { useEffect, useState } from "react";
-import SudokuBoard, { type sudokuSpecifics } from "./components/SudokuBoard"
-import Timer, {type TimerState as State, TimerState} from "./components/Timer"
+import { type sudokuSpecifics } from "./components/SudokuBoard"
+import {type TimerState as State, TimerState} from "./components/Timer"
 import Header from "./components/Header";
+import GameComponent from "./components/GameComponent";
+
+export const PageState = {
+  User: 1,
+  Game: 2,
+  Leader: 3,
+} as const;
+
+export type PageState = (typeof PageState)[keyof typeof PageState];
 
 
 function App() {
   const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
   const [timerRunning, setTimerRunning] = useState<State>(TimerState.Stop);
+  const [pageState, setPageState] = useState<PageState>(PageState.Game);
 
   const handleStartTimer = () => {
     setTimerRunning(TimerState.Start);
@@ -18,6 +28,18 @@ function App() {
 
   const handleResetTimer = () => {
     setTimerRunning(TimerState.Reset);
+  }
+
+  const handleUserPage = () => {
+    setPageState(PageState.User);
+  }
+
+  const handleGamePage = () => {
+    setPageState(PageState.Game);
+  }
+
+  const handleLeaderBoardPage = () => {
+    setPageState(PageState.Leader);
   }
   
   useEffect(() => {
@@ -53,24 +75,20 @@ function App() {
   return (
     <div>
       <div>
-        <Header/>
+        <Header onUserSelection={handleUserPage} onGameSelection={handleGamePage} onLeaderBoardSelection={handleLeaderBoardPage}/>
       </div>
       <main>
-        <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
-          <h1>Id: {boardSpecifics?.id}</h1>
-          <Timer timerRunning={timerRunning}/>
-          <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
-        </div>
-        
-        <div className="sudoku-container">
-        {boardSpecifics ? (
-          <SudokuBoard specifics={boardSpecifics} onStartTimer={handleStartTimer} onStopTimer={handleStopTimer} onResetTimer={handleResetTimer}/>
-        ) : (
-          <div>Loading board...</div>
-        )}
-        </div>
-        
-        <button onClick={() => handleNewBoard(-1)}>New Board</button>
+        {
+          pageState == PageState.User ?  ("User")
+          : pageState == PageState.Game ? <GameComponent 
+            boardSpecifics={boardSpecifics}
+            timerRunning={timerRunning}
+            handleStartTimer={handleStartTimer}
+            handleStopTimer={handleStopTimer}
+            handleResetTimer={handleResetTimer}
+            handleNewBoard={handleNewBoard} />
+          : ("leader Board")
+        }
       </main>
     </div>
     
