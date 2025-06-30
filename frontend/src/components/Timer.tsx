@@ -39,7 +39,17 @@ export default function Timer({ timerRunning }: Props) {
     };
   }, [timerRunning]);
 
+  function composetimer(): string{
+    let min: string = ""+ Math.floor(seconds / 60);
+    min = min.length === 1 ? "0" + min : min;
+
+    let sec: string = ""+ seconds % 60;
+    sec = sec.length === 1 ? "0" + sec : sec;
+
+    return min + ":" + sec;
+  }
+
   return (
-    <h1>{`${Math.floor(seconds / 60)}:${seconds % 60}`}</h1>
+    <h1>{composetimer()}</h1>
   );
 }
