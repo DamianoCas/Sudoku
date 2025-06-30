@@ -17,6 +17,9 @@ AppDataSource.initialize().then(async () => {
             'http://frontend:5173'
         ]
     }));
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true })); 
     
     Routes.forEach(route => {
         (app as any)[route.method](route.route, (req: Request, res: Response, next: Function) => {
