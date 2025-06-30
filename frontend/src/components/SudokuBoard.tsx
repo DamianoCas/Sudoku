@@ -26,6 +26,8 @@ interface SudokuBoardProps {
 
 export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onResetTimer}: SudokuBoardProps) {
   const [grid, setGrid] = useState<SudokuCell[][]>([]);
+  const [easyMode, setEasyMode] = useState(false);
+
   let started: boolean;
   if (!specifics) return;
 
@@ -152,6 +154,10 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
     return res;
   }
 
+  function checkComplition() {
+    
+  }
+
   function handleCellChange(row: number, col: number, newValue: string) {
     const newGrid = [...grid];
     const changedCell = newGrid[row][col];
@@ -165,11 +171,17 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
     }
 
     setGrid(newGrid);
+
+    checkComplition();
   };
+
   function showPosValues(row: number, col: number){
     console.log(row+1, col+1, grid[row][col].notPossibleValues);
   }
 
+  function handleEasyMode () {
+    setEasyMode(prev => !prev);
+  }
   return (
     <div>
       <div className="sudoku-grid">
@@ -193,7 +205,11 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
         )}
       </div>
       <div>
-        {lowestEntropy(grid).map((cell, index) => (
+        <input type="checkbox" id="easy_mode" name="easy_mode" onChange={handleEasyMode}/>
+        <label htmlFor="easy_mode">Easy Mode</label>
+      </div>
+      <div>
+        {easyMode ? lowestEntropy(grid).map((cell, index) => (
           <div key={index} style={{fontSize: '20px'}}>
             row: {cell.row+1}, col: {cell.col+1}, possible values: [
             {cell.notPossibleValues.reduce((acc: number[], num, index) => {
@@ -201,7 +217,7 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
               return acc;
             }, []).join(' or ')}]
           </div>
-        ))}
+        )): ""}
       </div>
     </div>
   );

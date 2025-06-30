@@ -1,5 +1,5 @@
 import SudokuBoard, { type sudokuSpecifics } from "./SudokuBoard"
-import Timer, {type TimerState as State, TimerState} from "./Timer"
+import Timer, { TimerState } from "./Timer"
 
 
 interface GameProps {
