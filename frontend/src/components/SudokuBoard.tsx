@@ -14,16 +14,19 @@ export type sudokuSpecifics = {
   puzzle: string;
   solution: string;
   clues: number;
-  diffuclty: number;
+  difficulty: number;
 }
 
 interface SudokuBoardProps {
-  specifics?: sudokuSpecifics
-  
+  specifics?: sudokuSpecifics;
+  onStartTimer: () => void;
+  onStopTimer: () => void;
+  onResetTimer: () => void;
 }
 
-export default function SudokuBoard ({specifics}: SudokuBoardProps) {
+export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onResetTimer}: SudokuBoardProps) {
   const [grid, setGrid] = useState<SudokuCell[][]>([]);
+  let started: boolean;
   if (!specifics) return;
 
   useEffect(() => {
@@ -39,7 +42,11 @@ export default function SudokuBoard ({specifics}: SudokuBoardProps) {
       newGrid.push(newRow);
     }
     checkPossibilitiesOnGrid(newGrid);
-    console.log("hello");
+    
+    started = false;
+    onStopTimer();
+    onResetTimer();
+
     setGrid(newGrid);
   }, [specifics.puzzle]);
 
@@ -151,6 +158,11 @@ export default function SudokuBoard ({specifics}: SudokuBoardProps) {
 
     modifyEntropy(row, col, newValue, changedCell.value, newGrid);
     changedCell.value = newValue.slice(0, 1); 
+
+    if (!started) {
+      started = true;
+      onStartTimer();
+    }
 
     setGrid(newGrid);
   };
