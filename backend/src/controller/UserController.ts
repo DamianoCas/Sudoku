@@ -70,9 +70,15 @@ export class UserController extends AbstractController{
 
             const user = await this.userRepository.findOne({ where: { eMail } })
 
-            if (!user) return "unregistered user";
+            if (!user) {
+                this.clientError(response, "unregistered user");
+                return "unregistered user";
+
+            } 
             if (await user.validatePassword(password)) return user;
-            else return "password not correct";
+            
+            this.clientError(response, "password not correct");
+            return "password not correct";
         } catch (error) {
             this.internalError(response, error.message);
         }

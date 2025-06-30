@@ -3,6 +3,7 @@ import { type sudokuSpecifics } from "./components/SudokuBoard"
 import {type TimerState as State, TimerState} from "./components/Timer"
 import Header from "./components/Header";
 import GameComponent from "./components/GameComponent";
+import User, { type UserType } from "./components/UserComponent";
 
 export const PageState = {
   User: 1,
@@ -17,30 +18,18 @@ function App() {
   const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
   const [timerRunning, setTimerRunning] = useState<State>(TimerState.Stop);
   const [pageState, setPageState] = useState<PageState>(PageState.Game);
+  const [user, setUser] = useState<UserType | null>(null);
 
-  const handleStartTimer = () => {
-    setTimerRunning(TimerState.Start);
-  }
+  const handleStartTimer = () => { setTimerRunning(TimerState.Start) }
+  const handleStopTimer = () => { setTimerRunning(TimerState.Stop) }
+  const handleResetTimer = () => { setTimerRunning(TimerState.Reset) }
 
-  const handleStopTimer = () => {
-    setTimerRunning(TimerState.Stop);
-  }
+  const handleUserPage = () => { setPageState(PageState.User) }
+  const handleGamePage = () => { setPageState(PageState.Game) }
+  const handleLeaderBoardPage = () => { setPageState(PageState.Leader) }
 
-  const handleResetTimer = () => {
-    setTimerRunning(TimerState.Reset);
-  }
+  const handleUserChange = (newUser: UserType | null) => { setUser(newUser) }
 
-  const handleUserPage = () => {
-    setPageState(PageState.User);
-  }
-
-  const handleGamePage = () => {
-    setPageState(PageState.Game);
-  }
-
-  const handleLeaderBoardPage = () => {
-    setPageState(PageState.Leader);
-  }
   
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +68,7 @@ function App() {
       </div>
       <main>
         {
-          pageState == PageState.User ?  ("User")
+          pageState == PageState.User ?  <User onUserChange={handleUserChange} user={user}/>
           : pageState == PageState.Game ? <GameComponent 
             boardSpecifics={boardSpecifics}
             timerRunning={timerRunning}

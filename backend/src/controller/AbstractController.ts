@@ -6,4 +6,9 @@ export default abstract class AbstractController {
         response.status(500);
         response.json({ error: message != undefined ? message : 'internal server error' });
     }
+
+    protected clientError(response: Response, message?: string): void {
+        response.status(401);
+        response.json({ error: message != undefined ? message : 'client sied error' });
+    }
 }

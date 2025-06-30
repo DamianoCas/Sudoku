@@ -1,0 +1,143 @@
+import { useState } from "react";
+import styles from '../styles/user.module.css';
+
+
+
+export interface UserType {
+    id: number;
+    userName: string;
+    eMail: string;
+    passwordHash: string;
+    salt: string;
+    userGames: any[];
+}
+
+interface LoginCredentials {
+    eMail:string;
+    password: string;
+}
+
+export const LoginState = {
+    EmptyPage: 1,
+    Login: 2,
+    Register: 3,
+} as const;
+
+export type LoginState = (typeof LoginState)[keyof typeof LoginState];
+
+interface UserProp {
+    onUserChange: (user: UserType | null) => void;
+    user: UserType | null;
+}
+
+
+export default function User( {onUserChange, user}: UserProp) {
+    const [loginState, setLoginState] = useState<LoginState>(LoginState.EmptyPage);
+    
+    const handleLogin = () => {
+        setLoginState(LoginState.Login);
+    }
+    
+    const handleRegister = () => {
+        setLoginState(LoginState.Register);
+    }
+    
+    function ifNotLoggedIn (){
+        return (
+            <div >
+            <h1>You are not logged in:</h1>
+            <hr />
+            <button onClick={handleLogin}>Login</button>
+            <button onClick={handleRegister}>Register</button>
+            </div>
+        );
+    }
+    
+    function loginHTML () {
+        return (
+            <form id="loginForm">
+            <h1>Login with your credentials!</h1>
+            <input type="text" placeholder="Your E-mail" id="email" name="email"/>
+            <input type="password" placeholder="Your Password" id="password" name="password"/>
+            <button onClick={login}>Try connection</button>
+            </form>
+        );
+    }
+    
+    async function login (event: React.MouseEvent<HTMLButtonElement>) {
+        event.preventDefault();
+        const form = document.getElementById("loginForm")! as HTMLFormElement;
+        
+        const formData: LoginCredentials = {
+            eMail: form.email.value,
+            password: form.password.value
+        }
+
+        const response = await loginUserDB(formData);
+
+        user = response ? response : null;
+        onUserChange(user);
+    }
+    
+    async function loginUserDB(userData: LoginCredentials) {
+        try {
+            const response = await fetch('/api/validateUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+            
+            if (!response.ok) {
+                console.log(response);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error posting user data:', error);
+        }
+    }
+    
+    function registerHTML () {
+        return (
+            <form>
+            <h1>Login with your credentials!</h1>
+            <input type="text" placeholder="Your UserName"/>
+            <input type="text" placeholder="Your E-mail"/>
+            <input type="password" placeholder="Your Password"/>
+            <input type="password" placeholder="Repeat Your Password"/>
+            <button>Try connection</button>
+            </form>
+        );
+    }
+    
+    function ifLoggedIn () {
+        return (
+            <div>
+                <h1>Hello {user?.userName}!</h1>
+                <hr />
+                <button onClick={logout}>Logout</button>
+            </div>
+        )
+    }
+
+    function logout () {
+        onUserChange(null);
+        setLoginState(LoginState.EmptyPage);
+    }
+    
+    return (
+        <div className={styles.login}>
+        {
+            !user ? 
+            loginState == LoginState.EmptyPage ? ifNotLoggedIn()
+            : loginState == LoginState.Login ? loginHTML()
+            : registerHTML()
+            : ifLoggedIn()
+        }
+        
+        </div>
+    );
+}
