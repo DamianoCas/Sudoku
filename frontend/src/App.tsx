@@ -31,7 +31,7 @@ function App() {
       <main>
         {
           pageState == PageState.User ?  <User onUserChange={handleUserChange} user={user}/>
-          : pageState == PageState.Game ? <GameComponent user={user} handleUserChange={handleUserChange}/>
+          : pageState == PageState.Game ? <GameComponent user={user}/>
           : ("leader Board")
         }
       </main>

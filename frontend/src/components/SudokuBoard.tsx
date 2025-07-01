@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles.css";
+import { TimerState } from "./Timer";
+
 
 type SudokuCell = {
   value: string;
@@ -8,6 +10,12 @@ type SudokuCell = {
   locked: boolean;
   notPossibleValues: number[];
 };
+
+export type endGameType = {
+  easy_mode: boolean;
+  completed: boolean;
+  errors: number;
+}
 
 export type sudokuSpecifics = {
   id: number;
@@ -19,12 +27,11 @@ export type sudokuSpecifics = {
 
 interface SudokuBoardProps {
   specifics?: sudokuSpecifics;
-  onStartTimer: () => void;
-  onStopTimer: () => void;
-  onResetTimer: () => void;
+  onTimerChange: (newTimerState: TimerState) => void;
+  onGameSave: (newGame: endGameType) => void;
 }
 
-export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onResetTimer}: SudokuBoardProps) {
+export default function SudokuBoard ({specifics, onTimerChange, onGameSave}: SudokuBoardProps) {
   const [grid, setGrid] = useState<SudokuCell[][]>([]);
   const [easyMode, setEasyMode] = useState(false);
   const [intervalAutoComplete, setIntervalAutoComplete] = useState<NodeJS.Timeout | null>(null)
@@ -48,8 +55,8 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
     checkPossibilitiesOnGrid(newGrid);
     
     started = false;
-    onStopTimer();
-    onResetTimer();
+    onTimerChange(TimerState.Stop);
+    onTimerChange(TimerState.Reset);
     
     setGrid(newGrid);
   }, [specifics.puzzle]);
@@ -178,15 +185,22 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
     
     if (!started) {
       started = true;
-      onStartTimer();
+      onTimerChange(TimerState.Start);
     }
     
-    if(checkComplition(newGrid)) onStopTimer();
-    
+    if(checkComplition(newGrid)) {
+      onTimerChange(TimerState.Stop);
+      console.log("hello");
+
+      const endGame: endGameType = {
+        easy_mode: true,
+        completed: true,
+        errors: 0,
+      }
+      onGameSave(endGame);
+    };    
     
     setGrid(newGrid);
-    
-    
   };
   
   function showPosValues(row: number, col: number){
@@ -219,7 +233,7 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
         if (nums.length != 1) return;
         
         handleCellChange(cell.row, cell.col, ""+nums[0]);
-      }, 500));
+      }, 100));
     }
   }
   

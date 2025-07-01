@@ -1,30 +1,94 @@
 import { useEffect, useState } from "react";
 import Timer, {type TimerState as State, TimerState} from "./Timer";
-import SudokuBoard, { type sudokuSpecifics } from "./SudokuBoard"
+import SudokuBoard, { type endGameType, type sudokuSpecifics } from "./SudokuBoard"
 import type { UserType } from "./UserComponent";
 
-export interface GameType {
-  id: number;
+interface GameType {
+  id?: number;
   easyMode: boolean;
   board: sudokuSpecifics;
 }
 
-interface GameProp {
-  user: UserType | null;
-  handleUserChange: (newUser: UserType | null) => void;
+interface UsersGamesType {
+  game: GameType;
+  user: UserType;
+  time: number;
+  completed: boolean;
+  errors: number;
+  winner: boolean;
 }
 
-export default function GameComponent ( {user, handleUserChange}: GameProp) {
+interface GameProp {
+  user: UserType | null;
+}
+
+export default function GameComponent ( {user}: GameProp) {
   const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
-  
   const [timerRunning, setTimerRunning] = useState<State>(TimerState.Stop);
-  const [game, setGame] = useState<GameType | null>(null);
   
-  const handleStartTimer = () => { setTimerRunning(TimerState.Start) }
-  const handleStopTimer = () => { setTimerRunning(TimerState.Stop) }
-  const handleResetTimer = () => { setTimerRunning(TimerState.Reset) }
+  const handleTimerChange = (newTimerState: TimerState) => { setTimerRunning(newTimerState) }
   
-  const handleGameChange = (newGame: GameType | null) => { setGame(newGame) }
+  async function handleGameSave (endGame: endGameType) {
+    let game: GameType = {
+      easyMode: endGame.easy_mode,
+      board: boardSpecifics as sudokuSpecifics
+    };
+
+    game = await createGame(game); 
+
+    let usersGames: UsersGamesType = {
+      game: game,
+      user: user as UserType,
+      time: 200,
+      completed: endGame.completed,
+      errors: endGame.errors,
+      winner: true
+    }
+
+    usersGames = await createUsersGames(usersGames);
+  }
+
+  async function createGame (newGame: GameType) {
+    try {
+      const response = await fetch('/api/game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newGame),
+      });
+      
+      if (!response.ok) {
+        console.log(response);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error posting user data:', error);
+    }
+  }
+
+  async function createUsersGames (newusersGames: UsersGamesType) {
+    try {
+      const response = await fetch('/api/usersGames', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newusersGames),
+      });
+      
+      if (!response.ok) {
+        console.log(response);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Error posting user data:', error);
+    }
+  }
   
   useEffect(() => {
     const fetchData = async () => {
@@ -66,7 +130,7 @@ export default function GameComponent ( {user, handleUserChange}: GameProp) {
     
     <div className="sudoku-container">
     {boardSpecifics ? (
-      <SudokuBoard specifics={boardSpecifics} onStartTimer={handleStartTimer} onStopTimer={handleStopTimer} onResetTimer={handleResetTimer}/>
+      <SudokuBoard specifics={boardSpecifics} onTimerChange={handleTimerChange} onGameSave={handleGameSave}/>
     ) : (
       <div>Loading board...</div>
     )}
