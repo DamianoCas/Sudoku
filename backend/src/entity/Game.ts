@@ -11,7 +11,9 @@ export class Game{
     @Column()
     easyMode: boolean;
 
-    @ManyToOne(() => SudokuBoard, (board) => board.games)
+    @ManyToOne(() => SudokuBoard, (board) => board.games, {
+        onDelete: "SET NULL",
+    })
     board: SudokuBoard;
 
     @OneToMany(() => UsersGames, (usersGame) => usersGame.game)

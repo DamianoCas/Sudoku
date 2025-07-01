@@ -19,6 +19,8 @@ export class SudokuBoard{
     @Column({type: "float"})
     difficulty: number;
 
-    @OneToMany(() => Game, (game) => game.board)
+    @OneToMany(() => Game, (game) => game.board, {
+        onDelete: "SET NULL",
+    })
     games: Game[];
 }
