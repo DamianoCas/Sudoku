@@ -116,7 +116,7 @@ export default function GameComponent ( {user}: GameProp) {
   }
   
   async function handleNewBoard(index: number) {
-    if (index === -1) index = Math.floor(Math.random() * (999))+1;
+    if (index === -1) index = Math.floor(Math.random() * (9999))+1;
     
     const board = await getBoardFromDB(index);
     setBoardSpecifics(board);
