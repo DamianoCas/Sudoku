@@ -59,8 +59,9 @@ export default function GameComponent ( {user}: GameProp) {
       });
       
       if (!response.ok) {
-        console.log(response);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       
       return await response.json();
@@ -80,8 +81,9 @@ export default function GameComponent ( {user}: GameProp) {
       });
       
       if (!response.ok) {
-        console.log(response);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       
       return await response.json();
