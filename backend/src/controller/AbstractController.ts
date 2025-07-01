@@ -7,8 +7,13 @@ export default abstract class AbstractController {
         response.json({ error: message != undefined ? message : 'internal server error' });
     }
 
-    protected clientError(response: Response, message?: string): void {
+    protected badRequestError(response: Response, message?: string): void {
         response.status(401);
         response.json({ error: message != undefined ? message : 'client sied error' });
+    }
+
+    protected notFoundError(response: Response, message?: string): void {
+        response.status(404);
+        response.json({ error: message != undefined ? message : 'resource not found' });
     }
 }
