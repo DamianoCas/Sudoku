@@ -25,8 +25,7 @@ export class UsersGamesController extends AbstractController {
             usersGames.errors = errors;
             usersGames.winner = winner;
 
-            this.UsersGamesRepository.save(this.UsersGamesRepository.create(usersGames));
-            return usersGames;
+            return this.UsersGamesRepository.save(this.UsersGamesRepository.create(usersGames));
             
         } catch (error) {
             this.internalError(response, error.message);

@@ -19,9 +19,8 @@ export class GameController extends AbstractController {
             game.board = board;
             game.easyMode = easyMode;
 
-            await this.gameRepository.save(this.gameRepository.create(game));
-            return game;
-            
+            return await this.gameRepository.save(this.gameRepository.create(game));
+
         } catch (error) {
             this.internalError(response, error.message)
         }

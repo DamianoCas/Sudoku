@@ -1,5 +1,7 @@
+import { GameController } from "./controller/GameController"
 import { SudokuBoardController } from "./controller/SudokuBoardController"
 import { UserController } from "./controller/UserController"
+import { UsersGamesController } from "./controller/UsersGamesController"
 
 export const Routes = [
 //User routes    
@@ -36,5 +38,21 @@ export const Routes = [
     route: "/sudokuBoard/:id",
     controller: SudokuBoardController,
     action: "one"
+},
+
+//Game routes
+{
+    method: "post",
+    route: "/game",
+    controller: GameController,
+    action: "save"
+},
+
+//UsersGames routes
+{
+    method: "post",
+    route: "/usersGames",
+    controller: UsersGamesController,
+    action: "save"
 }
 ]

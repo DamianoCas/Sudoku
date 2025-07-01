@@ -9,7 +9,7 @@ export default abstract class AbstractController {
 
     protected badRequestError(response: Response, message?: string): void {
         response.status(401);
-        response.json({ error: message != undefined ? message : 'client sied error' });
+        response.json({ error: message != undefined ? message : 'client side error' });
     }
 
     protected notFoundError(response: Response, message?: string): void {
