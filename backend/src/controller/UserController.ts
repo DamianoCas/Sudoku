@@ -65,19 +65,22 @@ export class UserController extends AbstractController{
     }
 
     async login(request: Request, response: Response, next: NextFunction) {
+        if(!request.body.eMail || !request.body.password){
+            return this.badRequestError(response, "body of the request not correct, (eMail, password)!")
+        }
         try {
             const { eMail, password } = request.body;
 
             const user = await this.userRepository.findOne({ where: { eMail } })
 
             if (!user) {
-                this.clientError(response, "unregistered user");
+                this.notFoundError(response, "unregistered user");
                 return "unregistered user";
 
             } 
             if (await user.validatePassword(password)) return user;
             
-            this.clientError(response, "password not correct");
+            this.badRequestError(response, "password not correct");
             return "password not correct";
         } catch (error) {
             this.internalError(response, error.message);
