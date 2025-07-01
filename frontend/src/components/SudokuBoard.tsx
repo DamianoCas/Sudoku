@@ -112,10 +112,10 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
         if (ifSub) toCheck.notPossibleValues[oldValNum]--;
       }
     }
-
+    
     const rowStart = row - row % 3;
     const colStart = col - col % 3;
-
+    
     for(let i = 0; i < 3; i++){
       if (rowStart + i != row){
         for(let j = 0; j < 3; j++){
@@ -128,21 +128,21 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
       }
     }
   }
-
+  
   function lowestEntropy(newGrid: SudokuCell[][]): SudokuCell[]{
     let res: SudokuCell[] = [];
     let lowestEntropyNow = 9;
-
+    
     if (newGrid === undefined || !newGrid.length){
       return res;
     }
-
+    
     for (let row = 0; row < 9; row++){
       for (let col = 0; col < 9; col ++){
         const toCheck = newGrid[row][col];
         if(!toCheck.locked && toCheck.value == ""){
           const entropy = toCheck.notPossibleValues.filter(item => item === 0).length;
-
+          
           if(entropy === lowestEntropyNow)
             res.push(toCheck);
           else if (entropy < lowestEntropyNow){
@@ -152,35 +152,47 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
         }
       }
     }
-
+    
     return res;
   }
-
-  function checkComplition() {
+  
+  function checkComplition(newGrid: SudokuCell[][]) {
+    let completeSudoku: string = "";
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        if(newGrid[i][j].value == "") return false;
+        
+        completeSudoku += newGrid[i][j].value;
+      }
+    }
     
+    return completeSudoku == specifics?.solution;
   }
-
+  
   function handleCellChange(row: number, col: number, newValue: string) {
     const newGrid = [...grid];
     const changedCell = newGrid[row][col];
-
+    
     modifyEntropy(row, col, newValue, changedCell.value, newGrid);
     changedCell.value = newValue.slice(0, 1); 
-
+    
     if (!started) {
       started = true;
       onStartTimer();
     }
-
+    
+    if(checkComplition(newGrid)) onStopTimer();
+    
+    
     setGrid(newGrid);
-
-    checkComplition();
+    
+    
   };
-
+  
   function showPosValues(row: number, col: number){
     console.log(row+1, col+1, grid[row][col].notPossibleValues);
   }
-
+  
   function handleEasyMode () {
     setEasyMode(prev => !prev);
   }
