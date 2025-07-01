@@ -27,10 +27,12 @@ interface SudokuBoardProps {
 export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onResetTimer}: SudokuBoardProps) {
   const [grid, setGrid] = useState<SudokuCell[][]>([]);
   const [easyMode, setEasyMode] = useState(false);
-
+  const [intervalAutoComplete, setIntervalAutoComplete] = useState<NodeJS.Timeout | null>(null)
+  
+  
   let started: boolean;
   if (!specifics) return;
-
+  
   useEffect(() => {
     let count = 0;
     const newGrid: SudokuCell[][] = [];
@@ -48,10 +50,10 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
     started = false;
     onStopTimer();
     onResetTimer();
-
+    
     setGrid(newGrid);
   }, [specifics.puzzle]);
-
+  
   function checkPossibilitiesOnGrid(grid: SudokuCell[][]) {
     for(let row = 0; row < 9; row++){
       for(let col = 0; col < 9; col++){
@@ -59,23 +61,23 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
       }
     }
   }
-
+  
   function checkPossibilitiesOnCell(grid: SudokuCell[][], row: number, col:number) {
     const myCell = grid[row][col];
-
+    
     for(let j = 0; j < 9; j++){
       const toCheck = grid[row][j];
       if(toCheck.value !== "") myCell.notPossibleValues[+toCheck.value - 1]++;
     }
-
+    
     for(let i = 0; i < 9; i++){
       const toCheck = grid[i][col];
       if(toCheck.value !== "") myCell.notPossibleValues[+toCheck.value - 1]++;
     }
-
+    
     const rowStart = row - row % 3;
     const colStart = col - col % 3;
-
+    
     for(let i = 0; i < 3; i++){
       if (rowStart + i != row){
         for(let j = 0; j < 3; j++){
@@ -87,14 +89,14 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
       }
     }
   }
-
+  
   function modifyEntropy(row: number, col: number, newValue: string, oldValue: string, newGrid: SudokuCell[][]){
     const ifSub: boolean = oldValue !== "";
     const ifAdd: boolean = newValue !== "";
-
+    
     const oldValNum = ifSub ? +oldValue -1 : 0;
     const newValNum = ifAdd ? +newValue -1 : 0;
-
+    
     for(let j = 0; j < 9; j++){
       const toCheck = newGrid[row][j];
       if(j != col){
@@ -102,7 +104,7 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
         if (ifSub) toCheck.notPossibleValues[oldValNum]--;
       }
     }
-
+    
     for(let i = 0; i < 9; i++){
       const toCheck = newGrid[i][col];
       if(i != row){
@@ -182,43 +184,78 @@ export default function SudokuBoard ({specifics, onStartTimer, onStopTimer, onRe
   function handleEasyMode () {
     setEasyMode(prev => !prev);
   }
+  
+  function handleAutoComplete() {
+    const isAutoComplete = (document.getElementById("auto_complete") as HTMLInputElement).checked;
+    
+    if (intervalAutoComplete) {
+      clearInterval(intervalAutoComplete);
+      setIntervalAutoComplete(null);
+    }
+    
+    if (isAutoComplete) {
+      setIntervalAutoComplete( setInterval(() => {
+        const bestCells: SudokuCell[] = lowestEntropy(grid);
+        if (!bestCells.length) return;
+        const cell = bestCells[0];
+        
+        const nums = cell.notPossibleValues.reduce((acc: number[], num, index) => {
+          if (num === 0) acc.push(index+1);
+          return acc;
+        }, []);
+        
+        if (nums.length != 1) return;
+        
+        handleCellChange(cell.row, cell.col, ""+nums[0]);
+      }, 500));
+    }
+  }
+  
+  
+  
   return (
     <div>
-      <div className="sudoku-grid">
-        {grid.map((row, rowIndex) => 
-          row.map((cell, colIndex) => (
-            <div key={`${rowIndex}-${colIndex}`} 
-              className={`sudoku-cell ${rowIndex === 2 || rowIndex === 5 ? "sudoku-row " : ""} 
+    <div className="sudoku-grid">
+    {grid.map((row, rowIndex) => 
+      row.map((cell, colIndex) => (
+        <div key={`${rowIndex}-${colIndex}`} 
+        className={`sudoku-cell ${rowIndex === 2 || rowIndex === 5 ? "sudoku-row " : ""} 
               ${!(cell.value === "" || cell.notPossibleValues[+cell.value - 1] === 0) ? "wrong": ""}`}>
-
-              <input
-                type="number"
-                min="1"
-                max="9"
-                value={cell.value}
-                onClick={() => showPosValues(rowIndex, colIndex)}
-                onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
-                disabled = {cell.locked}
-              />
-            </div>
-          ))
-        )}
-      </div>
-      <div>
-        <input type="checkbox" id="easy_mode" name="easy_mode" onChange={handleEasyMode}/>
-        <label htmlFor="easy_mode">Easy Mode</label>
-      </div>
-      <div>
-        {easyMode ? lowestEntropy(grid).map((cell, index) => (
-          <div key={index} style={{fontSize: '20px'}}>
-            row: {cell.row+1}, col: {cell.col+1}, possible values: [
-            {cell.notPossibleValues.reduce((acc: number[], num, index) => {
-              if (num === 0) acc.push(index+1);
-              return acc;
-            }, []).join(' or ')}]
-          </div>
-        )): ""}
-      </div>
+        
+        <input
+        type="number"
+        min="1"
+        max="9"
+        value={cell.value}
+        onClick={() => showPosValues(rowIndex, colIndex)}
+        onChange={(e) => handleCellChange(rowIndex, colIndex, e.target.value)}
+        disabled = {cell.locked}
+        />
+        </div>
+      ))
+    )}
     </div>
-  );
-};
+    <div>
+    <input type="checkbox" id="easy_mode" name="easy_mode" onChange={handleEasyMode}/>
+    <label htmlFor="easy_mode">Easy Mode</label>
+    </div>
+    <div>
+    {easyMode ? <div>
+      <div>
+      <input type="checkbox" id="auto_complete" name="auto_complete" onChange={handleAutoComplete}/>
+      <label htmlFor="auto_complete">Auto Complete Mode</label>
+      </div>
+      {lowestEntropy(grid).map((cell, index) => (
+        <div key={index} style={{fontSize: '20px'}}>
+        row: {cell.row+1}, col: {cell.col+1}, possible values: [
+          {cell.notPossibleValues.reduce((acc: number[], num, index) => {
+            if (num === 0) acc.push(index+1);
+            return acc;
+          }, []).join(' or ')}]
+          </div>
+        ))}
+        </div>: ""}
+        </div>
+        </div>
+      );
+    };
