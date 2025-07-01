@@ -17,6 +17,12 @@ interface LoginCredentials {
     password: string;
 }
 
+interface RegisterCredentials {
+    userName: string,
+    eMail: string,
+    password: string
+}
+
 export const LoginState = {
     EmptyPage: 1,
     Login: 2,
@@ -102,16 +108,55 @@ export default function User( {onUserChange, user}: UserProp) {
     
     function registerHTML () {
         return (
-            <form>
-            <h1>Login with your credentials!</h1>
-            <input type="text" placeholder="Your UserName"/>
-            <input type="text" placeholder="Your E-mail"/>
-            <input type="password" placeholder="Your Password"/>
-            <input type="password" placeholder="Repeat Your Password"/>
-            <button>Try connection</button>
+            <form id="registerForm">
+                <h1>Login with your credentials!</h1>
+                <input type="text" placeholder="Your UserName" id="userName" name="userName"/>
+                <input type="text" placeholder="Your E-mail" id="email" name="email"/>
+                <input type="password" placeholder="Your Password" id="password" name="password"/>
+                <input type="password" placeholder="Repeat Your Password"/>
+                <button onClick={register}>Try connection</button>
             </form>
         );
     }
+
+    async function register (event: React.MouseEvent<HTMLButtonElement>) {
+        event.preventDefault();
+        const form = document.getElementById("registerForm")! as HTMLFormElement;
+
+        const formData: RegisterCredentials = {
+            userName: form.userName.value,
+            eMail: form.email.value,
+            password: form.password.value,
+        }
+
+        const response = await registerUserDB(formData);
+
+        user = response ? response : null;
+        onUserChange(user);
+    }
+
+    async function registerUserDB(userData: LoginCredentials) {
+        try {
+            const response = await fetch('/api/users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData),
+            });
+            
+            if (!response.ok) {
+                console.log(response);
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error posting user data:', error);
+        }
+    }
+
+
     
     function ifLoggedIn () {
         return (
