@@ -9,9 +9,8 @@ export class UsersGamesController extends AbstractController {
     private UsersGamesRepository = AppDataSource.getRepository(UsersGames);
 
     async save(request: Request, response: Response, next: NextFunction) {
-        if (!request.body.game || !request.body.user || !request.body.time
-            || !request.body.completed || !request.body.errors || !request.body.winner) {
-
+        if (!('game' in request.body) || !('user' in request.body) || !('time' in request.body)
+            || !('completed' in request.body) || !('errors' in request.body) || !('winner' in request.body)) {
             return this.badRequestError(response, "body of the request not correct, (game, user, time, completed, errors, winner)!")
         }
         try {
