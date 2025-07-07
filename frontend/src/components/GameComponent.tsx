@@ -132,21 +132,21 @@ export default function GameComponent ( {user, onAlertUse}: GameProp) {
   
   return (
     <div>
-    <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
-    <h1>Id: {boardSpecifics?.id}</h1>
-    <Timer timerRunning={timerRunning}/>
-    <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
+      <h1>Id: {boardSpecifics?.id}</h1>
+      <Timer timerRunning={timerRunning}/>
+      <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
     </div>
     
     <div className="sudoku-container">
-    {boardSpecifics ? (
-      <SudokuBoard specifics={boardSpecifics} onTimerChange={handleTimerChange} onGameSave={handleGameSave}/>
-    ) : (
-      <div>Loading board...</div>
-    )}
-    </div>
-    
-    <button onClick={() => handleNewBoard(-1)}>New Board</button>
+      {boardSpecifics ? (
+        <SudokuBoard specifics={boardSpecifics} onTimerChange={handleTimerChange} onGameSave={handleGameSave}/>
+      ) : (
+        <div>Loading board...</div>
+      )}
+      </div>
+      
+      <button onClick={() => handleNewBoard(-1)}>New Board</button>
     </div>
   );
 };

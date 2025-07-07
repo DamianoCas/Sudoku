@@ -1,0 +1,17 @@
+.boardSelction input {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+  font: inherit;
+  font-weight: bold;
+  color: #3a4346;
+  cursor: pointer;
+}
+
+.boardSelction input:hover {
+  background-color: #e0e0e0;
+}

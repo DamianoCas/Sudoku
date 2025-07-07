@@ -3,6 +3,7 @@ import Header from "./components/Header";
 import GameComponent from "./components/GameComponent";
 import User, { type UserType } from "./components/UserComponent";
 import Alert, {type AlertData} from "./components/Alert";
+import LeaderBoard from "./components/LeaderBoard";
 
 
 export const PageState = {
@@ -39,7 +40,7 @@ function App() {
         {
           pageState == PageState.User ?  <User onUserChange={handleUserChange} onAlertUse={setAlertData} user={user}/>
           : pageState == PageState.Game ? <GameComponent onAlertUse={setAlertData} user={user}/>
-          : ("leader Board")
+          : <LeaderBoard />
         }
       </main>
       <div>
