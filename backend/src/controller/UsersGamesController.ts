@@ -31,4 +31,32 @@ export class UsersGamesController extends AbstractController {
             this.internalError(response, error.message);
         }
     }
+
+    async leaderBoard(request: Request, response: Response, next: NextFunction) {
+        if (!request.body.board){
+            return this.badRequestError(response, "Body of the request not correct, (board)");
+        }
+        try {
+            const { board } = request.body;
+
+            const data = await this.UsersGamesRepository
+            .createQueryBuilder("users_games")
+            .select("user.userName", "userName")
+            .addSelect("users_games.errors", "errors")
+            .addSelect("game.easyMode", "easyMode")
+            .addSelect("users_games.time", "time")
+            .innerJoin("users_games.game", "game")
+            .innerJoin("users_games.user", "user")
+            .where("game.boardId = :boardId", {boardId: board.id})
+            .take(100)
+            .getRawMany();
+
+            if (!data) return this.notFoundError(response, "no data available for this board id");
+            return this.correctRequest(response, data);
+
+
+        } catch (error) {
+            this.internalError(response, error.message);
+        }
+    }
 }

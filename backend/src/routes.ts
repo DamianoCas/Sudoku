@@ -54,5 +54,11 @@ export const Routes = [
     route: "/usersGames",
     controller: UsersGamesController,
     action: "save"
+},
+{
+    method: "post",
+    route: "/leaderBoard",
+    controller: UsersGamesController,
+    action: "leaderBoard"
 }
 ]

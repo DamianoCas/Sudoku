@@ -10,7 +10,7 @@ export class GameController extends AbstractController {
 
     async save(request: Request, response: Response, next: NextFunction) {
         if (!request.body.easyMode || !request.body.board){
-            return this.badRequestError(response, "body of the request not correct, (easyMode, board)!")
+            return this.badRequestError(response, "body of the request not correct, (easyMode, board)!");
         }
         try {
             const { easyMode, board } = request.body;
