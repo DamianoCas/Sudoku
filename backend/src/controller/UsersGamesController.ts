@@ -16,7 +16,7 @@ export class UsersGamesController extends AbstractController {
         try {
             const { game, user, time, completed, errors, winner } = request.body;
 
-            const usersGames = new UsersGames();
+            let usersGames = new UsersGames();
             usersGames.game = game;
             usersGames.user = user;
             usersGames.time = time;
@@ -24,7 +24,8 @@ export class UsersGamesController extends AbstractController {
             usersGames.errors = errors;
             usersGames.winner = winner;
 
-            return this.UsersGamesRepository.save(this.UsersGamesRepository.create(usersGames));
+            usersGames = await this.UsersGamesRepository.save(this.UsersGamesRepository.create(usersGames));
+            return this.correctRequest(response, usersGames);
             
         } catch (error) {
             this.internalError(response, error.message);

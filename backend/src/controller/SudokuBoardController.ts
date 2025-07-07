@@ -14,7 +14,7 @@ export class SudokuBoardController extends AbstractController {
             const sudokuBoard = await this.sudokuBoardRepository.findOne({ where: { id } });
 
             if (!sudokuBoard) return "Sudoku Board not present!";
-            return sudokuBoard;
+            return this.correctRequest(response, sudokuBoard);
         } catch (error) {
             this.internalError(response, error.message);
         }

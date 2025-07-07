@@ -15,11 +15,12 @@ export class GameController extends AbstractController {
         try {
             const { easyMode, board } = request.body;
 
-            const game = new Game();
+            let game = new Game();
             game.board = board;
             game.easyMode = easyMode;
 
-            return await this.gameRepository.save(this.gameRepository.create(game));
+            game = await this.gameRepository.save(this.gameRepository.create(game));
+            return this.correctRequest(response, game);
 
         } catch (error) {
             this.internalError(response, error.message)

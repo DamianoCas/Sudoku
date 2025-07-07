@@ -20,4 +20,10 @@ export default abstract class AbstractController {
         response.json({ error: message != undefined ? message : 'resource not found' });
         response.end();    
     }
+
+    protected correctRequest(response: Response, body: any): void {
+        response.status(200);
+        response.json(body);
+        response.end();
+    }
 }

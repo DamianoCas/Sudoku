@@ -10,7 +10,8 @@ export class UserController extends AbstractController{
 
     async all(request: Request, response: Response, next: NextFunction) {
         try {
-            return this.userRepository.find();
+            const users = this.userRepository.find();
+            return this.correctRequest(response, users);
         } catch (error) {
             this.internalError(response, error.message)
         }
@@ -21,8 +22,8 @@ export class UserController extends AbstractController{
             const id = parseInt(request.params.id);
             const user = await this.userRepository.findOne({ where: { id } })
 
-            if (!user) return "unregistered user";
-            return user
+            if (!user) return this.notFoundError(response, "unregistered user");
+            return this.correctRequest(response, user);
         } catch (error) {
             this.internalError(response, error.message);
         }
@@ -39,10 +40,10 @@ export class UserController extends AbstractController{
 
             const errors = await validate(user);
 
-            if (errors.length > 0) throw new Error('Validation failed');
-            else await this.userRepository.save(this.userRepository.create(user));
+            if (errors.length > 0) return this.badRequestError(response, "validation error");
+            else user = await this.userRepository.save(this.userRepository.create(user));
 
-            return user;
+            return this.correctRequest(response, user);
         } catch (error) {
             this.internalError(response, error.message);
         }
@@ -54,10 +55,10 @@ export class UserController extends AbstractController{
             const id = parseInt(request.params.id)
             let userToRemove = await this.userRepository.findOneBy({ id })
 
-            if (!userToRemove) return "this user not exist";
+            if (!userToRemove) return this.notFoundError(response, "this user does not exist");
 
             await this.userRepository.remove(userToRemove)
-            return "user has been removed"
+            return this.correctRequest(response, { message: "user has been removed"});
         } catch (error) {
             this.internalError(response, error.message);
         }
@@ -75,13 +76,10 @@ export class UserController extends AbstractController{
 
             if (!user) {
                 this.notFoundError(response, "unregistered user");
-                return "unregistered user";
-
             } 
-            if (await user.validatePassword(password)) return user;
+            if (await user.validatePassword(password)) return this.correctRequest(response, user);
             
             this.badRequestError(response, "password not correct");
-            return "password not correct";
         } catch (error) {
             this.internalError(response, error.message);
         }
