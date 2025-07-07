@@ -2,7 +2,6 @@ import { useState } from "react";
 import styles from '../styles/user.module.css';
 
 
-
 export interface UserType {
     id: number;
     userName: string;
@@ -33,11 +32,14 @@ export type LoginState = (typeof LoginState)[keyof typeof LoginState];
 
 interface UserProp {
     onUserChange: (user: UserType | null) => void;
+    onShowAlertChange: (newState: boolean) => void;
+    onAlertMessageChange: (message: string) => void;
+    onAlertTypeChange: (type: 'error' | 'success') => void;
     user: UserType | null;
 }
 
 
-export default function User( {onUserChange, user}: UserProp) {
+export default function User( {onUserChange, onAlertMessageChange, onAlertTypeChange, onShowAlertChange, user}: UserProp) {
     const [loginState, setLoginState] = useState<LoginState>(LoginState.EmptyPage);
     
     const handleLogin = () => {
@@ -97,7 +99,9 @@ export default function User( {onUserChange, user}: UserProp) {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                console.log(errorMessage);
+                onAlertMessageChange(errorMessage);
+                onAlertTypeChange('error');
+                onShowAlertChange(true);
                 return null;
             }
             
@@ -148,7 +152,9 @@ export default function User( {onUserChange, user}: UserProp) {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                console.log(errorMessage);
+                onAlertMessageChange(errorMessage);
+                onAlertTypeChange('error');
+                onShowAlertChange(true);
                 return null;
             }
             
@@ -184,7 +190,6 @@ export default function User( {onUserChange, user}: UserProp) {
             : registerHTML()
             : ifLoggedIn()
         }
-        
         </div>
     );
 }
