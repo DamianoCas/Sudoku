@@ -40,7 +40,7 @@ function App() {
         {
           pageState == PageState.User ?  <User onUserChange={handleUserChange} onAlertUse={setAlertData} user={user}/>
           : pageState == PageState.Game ? <GameComponent onAlertUse={setAlertData} user={user}/>
-          : <LeaderBoard />
+          : <LeaderBoard onAlertUse={setAlertData}/>
         }
       </main>
       <div>

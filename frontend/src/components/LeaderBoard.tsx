@@ -40,7 +40,7 @@ export default function LeaderBoard( {onAlertUse}: LeaderBoardProp) {
     async function handleIdChange() {
         const idBoard = (document.getElementById("idBoard")! as HTMLInputElement).value;
 
-        if (idBoard === "" || +idBoard < 1 || +idBoard > 9999) return;
+        if (idBoard === "" || +idBoard < 1 || +idBoard > 9999) return onAlertUse({ message: "numbers between 1 and 9999", type: 'error', showAlert: true });;
 
         const board = await getBoardFromDB(+idBoard);
         setchosenBoard(board);
