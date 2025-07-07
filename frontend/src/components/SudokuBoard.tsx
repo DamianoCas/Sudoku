@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "../styles.css";
+import "../styles/sudokuBoard.component.css";
 import { TimerState } from "./Timer";
 
 
