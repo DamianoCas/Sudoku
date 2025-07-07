@@ -79,10 +79,9 @@ export default function User( {onUserChange, user}: UserProp) {
             password: form.password.value
         }
 
-        const response = await loginUserDB(formData);
+        const user = await loginUserDB(formData);
 
-        user = response ? response : null;
-        onUserChange(user);
+        if (user) onUserChange(user);
     }
     
     async function loginUserDB(userData: LoginCredentials) {
@@ -98,7 +97,8 @@ export default function User( {onUserChange, user}: UserProp) {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                throw new Error(errorMessage);
+                console.log(errorMessage);
+                return null;
             }
             
             return await response.json();
@@ -130,10 +130,9 @@ export default function User( {onUserChange, user}: UserProp) {
             password: form.password.value,
         }
 
-        const response = await registerUserDB(formData);
+        const user = await registerUserDB(formData);
 
-        user = response ? response : null;
-        onUserChange(user);
+        if (user) onUserChange(user);
     }
 
     async function registerUserDB(userData: LoginCredentials) {
@@ -149,7 +148,8 @@ export default function User( {onUserChange, user}: UserProp) {
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                throw new Error(errorMessage);
+                console.log(errorMessage);
+                return null;
             }
             
             return await response.json();
