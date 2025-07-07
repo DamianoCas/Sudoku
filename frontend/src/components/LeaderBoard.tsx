@@ -44,8 +44,10 @@ export default function LeaderBoard( {onAlertUse}: LeaderBoardProp) {
 
         const board = await getBoardFromDB(+idBoard);
         setchosenBoard(board);
-        const leaderBoard = await getLeaderBoardDB(board);
-        console.log(leaderBoard);
+        const leaderBoard: any[] = await getLeaderBoardDB(board);
+        
+        setCount(leaderBoard.length)
+
         setTable( <div className={styles.table_container}>
             <table className={styles.data_table}>
                 <thead>
@@ -102,7 +104,7 @@ export default function LeaderBoard( {onAlertUse}: LeaderBoardProp) {
             chosenBoard !== null ? (<div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
                 <h1>Id: {chosenBoard?.id}</h1>
                 <h1>Difficulty: {chosenBoard?.difficulty}</h1>
-                <h1>Total Games: </h1>
+                <h1>Total Games: {count}</h1>
             </div>) : ""
         }
         {
