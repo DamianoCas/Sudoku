@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Timer, {type TimerState as State, TimerState} from "./Timer";
 import SudokuBoard, { type endGameType, type sudokuSpecifics } from "./SudokuBoard"
 import type { UserType } from "./UserComponent";
+import type { AlertData } from "./Alert";
 
 interface GameType {
   id?: number;
@@ -20,15 +21,22 @@ interface UsersGamesType {
 
 interface GameProp {
   user: UserType | null;
+  onAlertUse: (alertData: AlertData) => void;
 }
 
-export default function GameComponent ( {user}: GameProp) {
+export default function GameComponent ( {user, onAlertUse}: GameProp) {
   const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
   const [timerRunning, setTimerRunning] = useState<State>(TimerState.Stop);
   
   const handleTimerChange = (newTimerState: TimerState) => { setTimerRunning(newTimerState) }
   
   async function handleGameSave (endGame: endGameType) {
+    onAlertUse({
+      message: 'you completed this Sudoku!',
+      type: 'success',
+      showAlert: true
+    });
+
     let game: GameType = {
       easyMode: endGame.easy_mode,
       board: boardSpecifics as sudokuSpecifics
