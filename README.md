@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM
+# Awesome Sudoku Project Built in typeScript, nextTs and TypeORM
 
 Steps to run this project:
 
