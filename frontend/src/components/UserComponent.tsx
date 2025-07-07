@@ -118,7 +118,7 @@ export default function User( {onUserChange, onAlertMessageChange, onAlertTypeCh
                 <input type="text" placeholder="Your UserName" id="userName" name="userName"/>
                 <input type="text" placeholder="Your E-mail" id="email" name="email"/>
                 <input type="password" placeholder="Your Password" id="password" name="password"/>
-                <input type="password" placeholder="Repeat Your Password"/>
+                <input type="password" placeholder="Repeat Your Password" id="repeatPassword" name="repeatPassword"/>
                 <button onClick={register}>Try connection</button>
             </form>
         );
@@ -127,6 +127,13 @@ export default function User( {onUserChange, onAlertMessageChange, onAlertTypeCh
     async function register (event: React.MouseEvent<HTMLButtonElement>) {
         event.preventDefault();
         const form = document.getElementById("registerForm")! as HTMLFormElement;
+
+        if (form.password.value !== form.repeatPassword.value) {
+            onAlertMessageChange("The two passwords are different!");
+            onAlertTypeChange('error');
+            onShowAlertChange(true);
+            return;
+        }
 
         const formData: RegisterCredentials = {
             userName: form.userName.value,
