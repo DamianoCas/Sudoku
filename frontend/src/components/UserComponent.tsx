@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from '../styles/user.module.css';
+import { type AlertData } from "./Alert";
 
 
 export interface UserType {
@@ -32,14 +33,12 @@ export type LoginState = (typeof LoginState)[keyof typeof LoginState];
 
 interface UserProp {
     onUserChange: (user: UserType | null) => void;
-    onShowAlertChange: (newState: boolean) => void;
-    onAlertMessageChange: (message: string) => void;
-    onAlertTypeChange: (type: 'error' | 'success') => void;
+    onAlertUse: (alertData: AlertData) => void;
     user: UserType | null;
 }
 
 
-export default function User( {onUserChange, onAlertMessageChange, onAlertTypeChange, onShowAlertChange, user}: UserProp) {
+export default function User( {onUserChange, onAlertUse, user}: UserProp) {
     const [loginState, setLoginState] = useState<LoginState>(LoginState.EmptyPage);
     
     const handleLogin = () => {
@@ -99,9 +98,11 @@ export default function User( {onUserChange, onAlertMessageChange, onAlertTypeCh
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                onAlertMessageChange(errorMessage);
-                onAlertTypeChange('error');
-                onShowAlertChange(true);
+                onAlertUse({
+                    message: errorMessage,
+                    type: 'error',
+                    showAlert: true
+                });
                 return null;
             }
             
@@ -129,9 +130,11 @@ export default function User( {onUserChange, onAlertMessageChange, onAlertTypeCh
         const form = document.getElementById("registerForm")! as HTMLFormElement;
 
         if (form.password.value !== form.repeatPassword.value) {
-            onAlertMessageChange("The two passwords are different!");
-            onAlertTypeChange('error');
-            onShowAlertChange(true);
+            onAlertUse({
+                message: "The two passwords are different!",
+                type: 'error',
+                showAlert: true
+            });
             return;
         }
 
@@ -159,9 +162,11 @@ export default function User( {onUserChange, onAlertMessageChange, onAlertTypeCh
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-                onAlertMessageChange(errorMessage);
-                onAlertTypeChange('error');
-                onShowAlertChange(true);
+                onAlertUse({
+                    message: errorMessage,
+                    type: 'error',
+                    showAlert: true
+                });
                 return null;
             }
             

@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 import '../styles/alert.component.css';
 
+export type AlertData = {
+  message: string,
+  type: 'success' | 'error' | 'warning' | 'info',
+  showAlert: boolean
+}
 
 type AlertProps = {
   message: string;
