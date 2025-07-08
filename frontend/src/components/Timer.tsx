@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 export const TimerState = {
   Stop: 1,
@@ -8,12 +8,26 @@ export const TimerState = {
 
 export type TimerState = (typeof TimerState)[keyof typeof TimerState];
 
+type TimerRef = {
+  getRequiredTime: () => number;  // Expose this function to parent
+};
+
 type Props = {
   timerRunning: TimerState;
 };
 
-export default function Timer({ timerRunning }: Props) {
+const Timer = forwardRef<TimerRef, Props>(({ timerRunning }, ref) => {
   const [seconds, setSeconds] = useState(0);
+
+  // Internal function that will be exposed to parent
+  const onRequiredTime = () => {
+    return seconds;
+  };
+
+  // Expose the onRequiredTime function to parent
+  useImperativeHandle(ref, () => ({
+    getRequiredTime: onRequiredTime
+  }));
 
   useEffect(() => {
     if(timerRunning == TimerState.Reset) {
@@ -30,16 +44,14 @@ export default function Timer({ timerRunning }: Props) {
             return next;
         });
       }, 1000);
-
     } else if(interval && timerRunning == TimerState.Stop) clearInterval(interval);
     
-
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [timerRunning]);
 
-  function composetimer(): string{
+  function composetimer(): string {
     let min: string = ""+ Math.floor(seconds / 60);
     min = min.length === 1 ? "0" + min : min;
 
@@ -52,4 +64,6 @@ export default function Timer({ timerRunning }: Props) {
   return (
     <h1>{composetimer()}</h1>
   );
-}
+});
+
+export default Timer;

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Timer, {type TimerState as State, TimerState} from "./Timer";
 import SudokuBoard, { type endGameType, type sudokuSpecifics } from "./SudokuBoard"
 import type { UserType } from "./UserComponent";
@@ -25,6 +25,8 @@ interface GameProp {
 }
 
 export default function GameComponent ( {user, onAlertUse}: GameProp) {
+  const timerRef = useRef<{ getRequiredTime: () => number}>(null);
+
   const [boardSpecifics, setBoardSpecifics] = useState<sudokuSpecifics | null>(null);
   const [timerRunning, setTimerRunning] = useState<State>(TimerState.Stop);
   
@@ -37,6 +39,9 @@ export default function GameComponent ( {user, onAlertUse}: GameProp) {
       showAlert: true
     });
 
+    const currentTime = timerRef.current!.getRequiredTime();
+    console.log(currentTime);
+
     let game: GameType = {
       easyMode: endGame.easy_mode,
       board: boardSpecifics as sudokuSpecifics
@@ -47,7 +52,7 @@ export default function GameComponent ( {user, onAlertUse}: GameProp) {
     let usersGames: UsersGamesType = {
       game: game,
       user: user as UserType,
-      time: 200,
+      time: currentTime,
       completed: endGame.completed,
       errors: endGame.errors,
       winner: true
@@ -134,7 +139,7 @@ export default function GameComponent ( {user, onAlertUse}: GameProp) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignSelf: "center"}} >
       <h1>Id: {boardSpecifics?.id}</h1>
-      <Timer timerRunning={timerRunning}/>
+      <Timer ref={timerRef} timerRunning={timerRunning}/>
       <h1>Difficulty: {boardSpecifics?.difficulty}</h1>
     </div>
     
