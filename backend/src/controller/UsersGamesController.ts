@@ -48,8 +48,8 @@ export class UsersGamesController extends AbstractController {
             .innerJoin("users_games.game", "game")
             .leftJoin("users_games.user", "user")
             .where("game.boardId = :boardId", {boardId: board.id})
-            .take(100)
             .orderBy("time")
+            .take(100)
             .getRawMany();
 
             if (!data) return this.notFoundError(response, "no data available for this board id");
