@@ -76,12 +76,6 @@ async function insertUsers() {
 }
 
 async function insertSudokuBoards() {
-    await AppDataSource
-    .createQueryBuilder()
-    .delete()
-    .from(SudokuBoard)
-    .where("1 = 1")
-    .execute();
     
     try{
         const csvContent = await readFile('./src/assets/sudoku-3m.csv', 'utf-8');
@@ -110,6 +104,7 @@ async function insertSudokuBoards() {
             .insert()
             .into(SudokuBoard)
             .values(allSudokus)
+            .orIgnore()
             .execute();
         
 
