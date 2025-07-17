@@ -36,6 +36,7 @@ export default function SudokuBoard ({specifics, onTimerChange, onGameSave}: Sud
   const [easyMode, setEasyMode] = useState(false);
   const [intervalAutoComplete, setIntervalAutoComplete] = useState<NodeJS.Timeout | null>(null)
   
+  const [wasEasyModeUsed, setWasEasyModeUsed] = useState<boolean>(false);
   
   let started: boolean;
   if (!specifics) return;
@@ -54,6 +55,10 @@ export default function SudokuBoard ({specifics, onTimerChange, onGameSave}: Sud
     }
     checkPossibilitiesOnGrid(newGrid);
     
+    setWasEasyModeUsed(false);
+    (document.getElementById("easy_mode") as HTMLInputElement).checked = false;
+    setEasyMode(false);
+
     started = false;
     onTimerChange(TimerState.Stop);
     onTimerChange(TimerState.Reset);
@@ -190,13 +195,15 @@ export default function SudokuBoard ({specifics, onTimerChange, onGameSave}: Sud
     
     if(checkComplition(newGrid)) {
       onTimerChange(TimerState.Stop);
-      console.log("hello");
 
       const endGame: endGameType = {
-        easy_mode: true,
+        easy_mode: wasEasyModeUsed,
         completed: true,
         errors: 0,
       }
+
+      console.log(endGame);
+
       onGameSave(endGame);
     };    
     
@@ -209,6 +216,7 @@ export default function SudokuBoard ({specifics, onTimerChange, onGameSave}: Sud
   
   function handleEasyMode () {
     setEasyMode(prev => !prev);
+    setWasEasyModeUsed(true);
   }
   
   function handleAutoComplete() {
