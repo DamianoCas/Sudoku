@@ -10,7 +10,7 @@ export class UserController extends AbstractController{
 
     async all(request: Request, response: Response, next: NextFunction) {
         try {
-            const users = this.userRepository.find();
+            const users = await this.userRepository.find();
             return this.correctRequest(response, users);
         } catch (error) {
             this.internalError(response, error.message)
